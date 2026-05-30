@@ -1,0 +1,62 @@
+import "dotenv/config";
+import "./env";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+
+import { authRouter } from "./routes/auth";
+import { usersRouter } from "./routes/users";
+import { opportunitiesRouter } from "./routes/opportunities";
+import { housingRouter } from "./routes/housing";
+import { forumsRouter } from "./routes/forums";
+import { messagesRouter } from "./routes/messages";
+import { aiRouter } from "./routes/ai";
+import { moderationRouter } from "./routes/moderation";
+import { contentRouter } from "./routes/content";
+import { errorHandler } from "./middleware/error";
+import { csrfProtection } from "./middleware/csrf";
+import { initWebsocket } from "./ws";
+
+const app = express();
+const PORT = Number(process.env.PORT || 4000);
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan("dev"));
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000", credentials: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+app.use(csrfProtection);
+
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
+
+app.get("/health", (_req, res) => res.json({ status: "ok", service: "globalpath-api" }));
+
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/opportunities", opportunitiesRouter);
+app.use("/api/housing", housingRouter);
+app.use("/api/forums", forumsRouter);
+app.use("/api/messages", messagesRouter);
+app.use("/api/ai", aiRouter);
+app.use("/api/moderation", moderationRouter);
+app.use("/api/content", contentRouter);
+
+app.use(errorHandler);
+
+const server = app.listen(PORT, () => {
+  console.log(`🌍 GlobalPath API running on http://localhost:${PORT}`);
+});
+
+initWebsocket(server);

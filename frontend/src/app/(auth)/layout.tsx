@@ -1,0 +1,44 @@
+import Link from "next/link";
+import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen grid md:grid-cols-2">
+      {/* Left side: form */}
+      <div className="flex flex-col">
+        <header className="px-8 py-6 flex items-center justify-between">
+          <Link href="/">
+            <Logo />
+          </Link>
+          <ThemeToggle />
+        </header>
+        <main className="flex-1 flex items-center justify-center px-8 py-12">
+          <div className="w-full max-w-md">{children}</div>
+        </main>
+        <footer className="px-8 py-6 text-xs text-ink-500">
+          © 2025 GlobalPath · Group 8
+        </footer>
+      </div>
+
+      {/* Right side: visual */}
+      <div className="hidden md:flex relative bg-gradient-to-br from-clay-500 via-clay-600 to-clay-700 text-white p-12 items-end overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-slate-900/20 rounded-full blur-3xl" />
+
+        <div className="relative max-w-md">
+          <blockquote className="font-display text-3xl leading-tight">
+            &ldquo;GlobalPath turned my Canada study permit nightmare into a 30-minute conversation.&rdquo;
+          </blockquote>
+          <div className="mt-6 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-medium">A</div>
+            <div>
+              <p className="font-medium text-sm">Amara O.</p>
+              <p className="text-xs text-white/85">Lagos → Toronto · CS</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
